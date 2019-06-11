@@ -7,10 +7,11 @@
         xmlns:vm="clr-namespace:SklepWPF.ViewModels"
         xmlns:all="clr-namespace:SklepWPF"
         mc:Ignorable="d"
-        Title="Sklep internetowy" Height="700" Width="600"
+        Title="Sklep internetowy" Height="600" Width="800"
         WindowStartupLocation="CenterScreen"
 >
     <Window.Resources>
+
         <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
             <local:DisplayProducts />
         </DataTemplate>
@@ -18,7 +19,7 @@
         <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
             <local:Register />
         </DataTemplate>
-        
+
         <DataTemplate DataType="{x:Type vm:ProductDetailsViewModel}">
             <local:ProductDetails />
         </DataTemplate>
@@ -35,9 +36,92 @@
             <local:ClientPanel />
         </DataTemplate>
 
-    
+        <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
+            <local:MessageBox />
+        </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:DisplayMessageViewModel}">
+            <local:DisplayMessage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CreateMessageViewModel}">
+            <local:CreateMessage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:AdminPanelViewModel}">
+            <local:AdminPanel />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ProductListViewModel}">
+            <local:ProductList />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ClientListViewModel}">
+            <local:ClientList />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:OrderViewModel}">
+            <local:Order />
+        </DataTemplate>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+        <Style TargetType="{x:Type PasswordBox}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="5 0 0 0"/>
+        </Style>
+
+        <Style TargetType="{x:Type ListBox}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="12"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="DarkGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
+
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Azure" Offset="0" />
+            <!-- replace my:CoolControl with your namespace declaration and UserControl name -->
+            <GradientStop Color="BlueViolet" Offset="1" />
+        </LinearGradientBrush>
+    </Window.Background>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -49,20 +133,20 @@
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            
             <BooleanToVisibilityConverter x:Key="BoolToVis"/>
             <all:Proxy x:Key="Proxy" Data="{Binding}" />
             <all:ReverseBooleanToVisibilityConverter x:Key="ReverseVisibility" />
         </Grid.Resources>
 
         <DockPanel  Grid.Row="0">
-            
+
             <Menu DockPanel.Dock="Top" DataContext="{Binding PageViewModels}">
                 <MenuItem Header="Sklep"   >
 
                     <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChangePageCommand}" CommandParameter="Products"  Header="Produkty"></MenuItem>
 
-                    <MenuItem Header="Zarządzaj"></MenuItem>
+                    <MenuItem CommandParameter="AdminPanel" Header="Zarządzaj"
+                              Visibility="{Binding Source={StaticResource Proxy}, Path=Data.IsUserAdmin, Converter={StaticResource BoolToVis},FallbackValue=Collapsed}" Command="{Binding Source={StaticResource Proxy}, Path=Data.ChangePageCommand}"></MenuItem>
 
                 </MenuItem>
 
@@ -76,7 +160,7 @@
 
                     </MenuItem>
 
-                    <MenuItem DataContext="{Binding Source={x:Static vm:ApplicationViewModel.Instance}}" Visibility="{Binding IsUserLogged, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Command="{Binding Source={StaticResource Proxy}, Path=Data.ChangePageCommand}" CommandParameter="Cart" Header="Koszyk">
+                    <MenuItem DataContext="{Binding Source={x:Static vm:ApplicationViewModel.Instance}}" Visibility="{Binding IsUserLogged, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Command="{Binding CartCommand}" Header="Koszyk">
 
                     </MenuItem>
 
@@ -84,6 +168,9 @@
 
                     </MenuItem>
 
+                    <MenuItem DataContext="{Binding Source={x:Static vm:ApplicationViewModel.Instance}}" Visibility="{Binding IsUserLogged, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Command="{Binding Source={StaticResource Proxy}, Path=Data.ChangePageCommand}" CommandParameter="MessageBox" Header="Wiadomości">
+
+                    </MenuItem>
 
                     <MenuItem DataContext="{Binding Source={x:Static vm:ApplicationViewModel.Instance}}" Visibility="{Binding IsUserLogged, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Command="{Binding Source={StaticResource Proxy}, Path=Data.LogOutCommand}"   Header="Wyloguj">
 
@@ -93,7 +180,7 @@
                 </MenuItem>
 
             </Menu>
-            
+
         </DockPanel>
 
         <ContentControl Grid.Row="1" Content="{Binding CurrentPageViewModel}" />

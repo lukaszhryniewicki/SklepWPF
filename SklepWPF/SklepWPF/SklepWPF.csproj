@@ -40,9 +40,17 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -60,6 +68,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BooleanToEnvelopeImageConverter.cs" />
     <Compile Include="Data\Migrations\201905241711060_init.cs" />
     <Compile Include="Data\Migrations\201905241711060_init.Designer.cs">
       <DependentUpon>201905241711060_init.cs</DependentUpon>
@@ -80,22 +89,60 @@
     <Compile Include="Data\Migrations\201905271950175_AddedRequiredAnnotations.Designer.cs">
       <DependentUpon>201905271950175_AddedRequiredAnnotations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\Migrations\201905282233105_Messages_Orders_UserAndProductModifications.cs" />
+    <Compile Include="Data\Migrations\201905282233105_Messages_Orders_UserAndProductModifications.Designer.cs">
+      <DependentUpon>201905282233105_Messages_Orders_UserAndProductModifications.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\201905311035110_BlankMigration.cs" />
+    <Compile Include="Data\Migrations\201905311035110_BlankMigration.Designer.cs">
+      <DependentUpon>201905311035110_BlankMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\201906011246186_MessageModelModification.cs" />
+    <Compile Include="Data\Migrations\201906011246186_MessageModelModification.Designer.cs">
+      <DependentUpon>201906011246186_MessageModelModification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\201906012152334_AddedObservedProductsAndOrderModification.cs" />
+    <Compile Include="Data\Migrations\201906012152334_AddedObservedProductsAndOrderModification.Designer.cs">
+      <DependentUpon>201906012152334_AddedObservedProductsAndOrderModification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\201906070827280_UserCartAndMergedMigration.cs" />
+    <Compile Include="Data\Migrations\201906070827280_UserCartAndMergedMigration.Designer.cs">
+      <DependentUpon>201906070827280_UserCartAndMergedMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Migrations\201906072124199_ProductImage.cs" />
+    <Compile Include="Data\Migrations\201906072124199_ProductImage.Designer.cs">
+      <DependentUpon>201906072124199_ProductImage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data\MyDbContext.cs" />
+    <Compile Include="Enums\EnumBindingSourceExtension.cs" />
+    <Compile Include="Enums\EnumDescriptionTypeConverter.cs" />
+    <Compile Include="Models\UserCart.cs" />
     <Compile Include="ReverseBooleanToVisibilityConverter.cs" />
     <Compile Include="IPageViewModel.cs" />
     <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Models\ObservableObject.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderProduct.cs" />
     <Compile Include="Models\Product.cs" />
-    <Compile Include="RelayCommand.cs" />
+    <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="RunTimeInfo.cs" />
+    <Compile Include="ViewModels\AdminPanelViewModel.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="ViewModels\CartViewModel.cs" />
+    <Compile Include="ViewModels\ClientListViewModel.cs" />
     <Compile Include="ViewModels\ClientPanelViewModel.cs" />
+    <Compile Include="ViewModels\CreateMessageViewModel.cs" />
+    <Compile Include="ViewModels\DisplayMessageViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MessageBoxViewModel.cs" />
+    <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\ProductDetailsViewModel.cs" />
+    <Compile Include="ViewModels\ProductListViewModel.cs" />
     <Compile Include="ViewModels\ProductsViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="Views\ApplicationView.xaml.cs">
@@ -110,20 +157,26 @@
     <Compile Include="Views\ClientPanel.xaml.cs">
       <DependentUpon>ClientPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\costam.xaml.cs">
-      <DependentUpon>costam.xaml</DependentUpon>
+    <Compile Include="Views\AdminPanel.xaml.cs">
+      <DependentUpon>AdminPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateMessage.xaml.cs">
+      <DependentUpon>CreateMessage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DisplayMessage.xaml.cs">
+      <DependentUpon>DisplayMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DisplayProducts.xaml.cs">
       <DependentUpon>DisplayProducts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EditProduct.xaml.cs">
-      <DependentUpon>EditProduct.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MessageBox.xaml.cs">
+      <DependentUpon>MessageBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Order.xaml.cs">
       <DependentUpon>Order.xaml</DependentUpon>
@@ -157,17 +210,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\costam.xaml">
+    <Page Include="Views\AdminPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CreateMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DisplayMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DisplayProducts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\EditProduct.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Login.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -176,6 +233,10 @@
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MessageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Order.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -223,6 +284,24 @@
     <EmbeddedResource Include="Data\Migrations\201905271950175_AddedRequiredAnnotations.resx">
       <DependentUpon>201905271950175_AddedRequiredAnnotations.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201905282233105_Messages_Orders_UserAndProductModifications.resx">
+      <DependentUpon>201905282233105_Messages_Orders_UserAndProductModifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201905311035110_BlankMigration.resx">
+      <DependentUpon>201905311035110_BlankMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201906011246186_MessageModelModification.resx">
+      <DependentUpon>201906011246186_MessageModelModification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201906012152334_AddedObservedProductsAndOrderModification.resx">
+      <DependentUpon>201906012152334_AddedObservedProductsAndOrderModification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201906070827280_UserCartAndMergedMigration.resx">
+      <DependentUpon>201906070827280_UserCartAndMergedMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\Migrations\201906072124199_ProductImage.resx">
+      <DependentUpon>201906072124199_ProductImage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -236,6 +315,30 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\user_list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\goods.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\shopping_cart_add.png" />
+    <Resource Include="Images\shopping_cart_remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\observe_product.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\allebro_logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\error_message.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\closed_envelope.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\opened_envelope.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

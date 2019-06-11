@@ -9,15 +9,28 @@ using System.Windows.Input;
 
 namespace SklepWPF.ViewModels
 {
-	public class LoginViewModel : IPageViewModel
+	 class LoginViewModel :ObservableObject, IPageViewModel
 	{
 		public string Name { get; set; }
-
 		public string Username { get; set; }
+
+        private string wrongLoginCredentials;
+        public string WrongLoginCredentials
+        {
+            get
+            {
+                return wrongLoginCredentials;
+            }
+            set
+            {
+                if (wrongLoginCredentials != value)
+                    wrongLoginCredentials = value;
+                OnPropertyChanged("WrongLoginCredentials");
+            }
+        }
 
 		private ICommand _loginCommand { get; set; }
 		private readonly MyDbContext _db;
-
 		public LoginViewModel()
 		{
 			_db = MyDbContext.Create();
@@ -31,8 +44,7 @@ namespace SklepWPF.ViewModels
 				if (_loginCommand == null)
 				{
 					_loginCommand = new RelayCommand(
-						p => Login(Username,(PasswordBox)p),
-						p=>IsValid((PasswordBox)p));
+						p => Login(Username,(PasswordBox)p));
 				}
 
 				return _loginCommand;
@@ -43,24 +55,26 @@ namespace SklepWPF.ViewModels
 		private void Login( string username,  PasswordBox passwordBox)
 		{
 			var user = _db.Users
-				.Where(x => x.Nickname == username &&
-				x.Password == passwordBox.Password)
-				.SingleOrDefault();
+				.SingleOrDefault(x => x.Nickname == username &&
+				x.Password == passwordBox.Password);
 
-			if (user == null) return;
+			if (user == null)
+            {
+                WrongLoginCredentials = "Zły login lub hasło";
+            }
+
 			else
 			{
 				RunTimeInfo.Instance.Username = username;
 				ApplicationViewModel.Instance.IsUserLogged = true;
+                if(user.IsAdmin)
+                {
+                    ApplicationViewModel.Instance.IsUserAdmin = true;
+                }
 				ApplicationViewModel.Instance.CurrentPageViewModel = new ProductsViewModel();
 
 			}
 
-		}
-		private bool IsValid(PasswordBox passwordBox)
-		{
-			return !string.IsNullOrEmpty(Username)
-				&&!string.IsNullOrEmpty(passwordBox.Password);
 		}
 	}
 }

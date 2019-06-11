@@ -21,6 +21,7 @@ namespace SklepWPF.ViewModels
 		public List<IPageViewModel> PageViewModels;
 
 		private bool _isUserLogged = false;
+        private bool _isUserAdmin = false;
 
 		public static ApplicationViewModel Instance
 		{
@@ -33,26 +34,41 @@ namespace SklepWPF.ViewModels
 
 		public ApplicationViewModel()
 		{
-			PageViewModels = new List<IPageViewModel>
-			{
+            PageViewModels = new List<IPageViewModel>
+            {
 				// Add available pages
 				new ProductsViewModel { Name = "Products" },
 
-				new LoginViewModel { Name = "Login" },
+                new LoginViewModel { Name = "Login" },
 
-				new RegisterViewModel { Name = "Register" },
+                new RegisterViewModel { Name = "Register" },
 
-				new CartViewModel { Name = "Cart" },
+                new ClientPanelViewModel { Name = "Account" },
 
-				new ClientPanelViewModel { Name = "Account" }
-			};
+                new MessageBoxViewModel { Name = "MessageBox" },
+
+                new AdminPanelViewModel { Name = "AdminPanel" },
+            };
 
 
 			// Set starting page
 			CurrentPageViewModel = PageViewModels[0];
 		}
 
-		public ICommand LogOutCommand
+        public ICommand CartCommand
+        {
+            get
+            {
+                return new RelayCommand(p => Cart());
+            }
+        }
+
+        public void Cart()
+        {
+            ApplicationViewModel.Instance.CurrentPageViewModel = new CartViewModel();
+        }
+
+        public ICommand LogOutCommand
 		{
 			get
 			{
@@ -78,6 +94,7 @@ namespace SklepWPF.ViewModels
 
 			RunTimeInfo.Instance.Username = "Konto";
 			IsUserLogged = false;
+            IsUserAdmin = false;
 			CurrentPageViewModel = new LoginViewModel();
 		}
 
@@ -99,11 +116,27 @@ namespace SklepWPF.ViewModels
 		private void ChangeViewModel(string name)
 		{
 			CurrentPageViewModel = PageViewModels
-				.Where(x => x.Name == name)
-				.SingleOrDefault();
+				.SingleOrDefault(x => x.Name == name);
 		}
 
-		public bool IsUserLogged
+        public bool IsUserAdmin
+        {
+            get
+            {
+                return _isUserAdmin;
+            }
+            set
+            {
+                if (_isUserAdmin != value)
+                {
+
+                    _isUserAdmin = value;
+                    OnPropertyChanged("IsUserAdmin");
+                }
+            }
+        }
+
+        public bool IsUserLogged
 		{
 			get
 			{

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace SklepWPF
+namespace SklepWPF.Models
 {
 	class RelayCommand : ICommand
 	{

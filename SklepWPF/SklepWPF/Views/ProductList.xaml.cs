@@ -12,16 +12,30 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace SklepWPF.Views
 {
     /// <summary>
     /// Interaction logic for ListaProduktow.xaml
     /// </summary>
-    public partial class ProductList : Window
+    public partial class ProductList : UserControl
     {
         public ProductList()
         {
             InitializeComponent();
+        }
+
+        private void produktyListBox_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(produktyListBox.SelectedIndex != -1)
+            {
+                produktyListBox.UnselectAll();
+                nazwaTextBox.Clear();
+                opisTextBox.Clear();
+                cenaTextBox.Clear();
+                markaTextBox.Clear();
+                iloscTextBox.Clear();
+                CategoryComboBox.SelectedIndex = -1;
+            }
         }
     }
 }

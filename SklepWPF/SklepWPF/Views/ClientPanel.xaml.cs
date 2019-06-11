@@ -24,26 +24,22 @@ namespace SklepWPF.Views
         {
             InitializeComponent();
         }
-/*
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
 
-            if (textBox.Text == "Szukaj")
-            {
-                textBox.Text = string.Empty;
-            }
+        private void ClearPersonalData_Click(object sender, RoutedEventArgs e)
+        {
+            Username.Clear();
+            Surname.Clear();
+            StreetName.Clear();
+            PostalCode.Clear();
+            PhoneNumber.Clear();
+            City.Clear();
+            Email.Clear();
         }
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            TextBox textBox = (TextBox)sender;
-
-            if (textBox.Text == string.Empty)
-            {
-                textBox.Text = "Szukaj";
-            }
+            BindingExpression be = SearchQueryTextBox.GetBindingExpression(TextBox.TextProperty);
+            be.UpdateSource();
         }
-*/
     }
 }

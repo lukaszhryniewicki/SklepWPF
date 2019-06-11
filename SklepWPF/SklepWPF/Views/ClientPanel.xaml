@@ -3,9 +3,42 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SklepWPF.Views"
+        xmlns:enums = "clr-namespace:SklepWPF.Enums"
         mc:Ignorable="d"
-        Height="450" Width="800">
+        xmlns:vm = "clr-namespace:SklepWPF.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        d:DesignHeight="600" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <vm:ClientPanelViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+
+        
+        
+        <DataTemplate x:Key="OrdersTemplate">
+            <DockPanel Margin="5 4 5 4">
+                <TextBlock Margin="5" Text="{Binding Created, StringFormat=dd-MM-yyyy HH:mm}"></TextBlock>
+                <TextBlock Margin="5" Text="{Binding PaymentMethod}"></TextBlock>
+                <TextBlock Margin="5" Text="{Binding DeliveryMethod}"></TextBlock>
+                <TextBlock Margin="5" Text="{Binding OrderStatus}"></TextBlock>
+            </DockPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ProductsTemplate">
+            <DockPanel Margin="5 4">
+                <Button Command="{Binding DataContext.ViewProductCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Id}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5" Text="{Binding Name}"></TextBlock>
+                        <TextBlock Margin="5" Text="{Binding Brand}"></TextBlock>
+                        <TextBlock Margin="5" Text="{Binding Price}"></TextBlock>
+                    </StackPanel>
+                </Button>
+            </DockPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -16,67 +49,71 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Column="3" Grid.ColumnSpan="2" Grid.RowSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
 
-            <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding Path=SelectedValue.Content, ElementName=ItemsToDisplay}" FontSize="20" Padding="10"></Label>
-            <GroupBox Grid.Row="1" Grid.RowSpan="3" Header="Opcje" Margin="10,0" Padding="10" BorderBrush="Black" BorderThickness="2">
+            <GroupBox Grid.Column="3" Grid.ColumnSpan="2" FontSize="16" Header="Opcje" Margin="10, 0" Padding="10" BorderBrush="Black" BorderThickness="2">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="Wyświetl:" VerticalAlignment="Center"></Label>
-                    <ComboBox SelectedIndex="0" Name="ItemsToDisplay" Grid.Column="1" Grid.ColumnSpan="3" Margin="11">
-                        <ComboBoxItem Content="Historia zamówień"/>
-                        <ComboBoxItem Content="Obserwowane produkty"/>
+                    <Label FontSize="16" Content="Wyświetl:" VerticalAlignment="Center"></Label>
+                    <ComboBox FontSize="16" SelectedIndex="0" Name="OrdersAndProductsCombobox" Grid.Column="1" Grid.ColumnSpan="3" Margin="11" ItemsSource="{Binding Source={enums:EnumBindingSource {x:Type enums:ClientPanelDisplayedItems}}}" SelectedItem="{Binding DisplayedItems}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding ChangeDisplayedItemsCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}, 
+                                        Path=SelectedIndex}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </ComboBox>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <Image Height="10" Width="10"></Image>
-                        <Label Grid.Row="1" Content="Szukaj:" VerticalAlignment="Center"></Label>
-                    </StackPanel>
-                    <TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Margin="11"></TextBox>
+                    <Button FontSize="16" Grid.Row="1" Grid.Column="3" Content="Szukaj" VerticalAlignment="Center" Command="{Binding SearchOrdPrdCommand}" Click="SearchButton_Click"/>
+                    <TextBox FontSize="16" Name="SearchQueryTextBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0 11 0 11" Text="{Binding OrdPrdSearchQuery, UpdateSourceTrigger=Explicit}"></TextBox>
                 </Grid>
             </GroupBox>
+
+            <Grid Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <ListView Grid.RowSpan="5" Padding="10" Margin="10 0 10 0" BorderBrush="Black" BorderThickness="2 2 2 0" HorizontalContentAlignment="Stretch">
+                <ListView.Style>
+                    <Style TargetType="{x:Type ListView}">
+                        <Setter Property="ItemsSource" Value="{Binding Orders}"/>
+                        <Setter Property="ItemTemplate" Value="{StaticResource OrdersTemplate}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=OrdersAndProductsCombobox, Path=SelectedItem}" Value="ObservedProducts">
+                                <Setter Property="ItemsSource" Value="{Binding ObservedProducts}" />
+                                <Setter Property="ItemTemplate" Value="{StaticResource ProductsTemplate}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.Style>
+            </ListView>
         </Grid>
 
-        <ListView Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="3" Padding="10" Margin="10 0 10 10" BorderBrush="Black" BorderThickness="2 0 2 2">
-            <ListViewItem Content="Produkt 1" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 2" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 3" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 4" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 5" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 6" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 7" BorderThickness="10"/>
-            <ListViewItem Content="Produkt 8" BorderThickness="10"/>
-        </ListView>
-                
-        <GroupBox Header="Dane" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10" BorderBrush="Black" BorderThickness="2">
+        <GroupBox FontSize="16" Padding="10" Header="Dane" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10 0" BorderBrush="Black" BorderThickness="2">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -85,96 +122,67 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <Label Content="Imię:" VerticalAlignment="Center"></Label>
-                <TextBox Grid.Column="1" Grid.ColumnSpan="2" Margin="5,7"></TextBox>
-                <Label Content="Nazwisko:" Grid.Row="1" VerticalAlignment="Center"></Label>
-                <TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5,7"></TextBox>
-                <Label Content="Numer kontaktowy:" Grid.Row="2" VerticalAlignment="Center"></Label>
-                <TextBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="5,7"></TextBox>
-                <Label Content="Miasto:" Grid.Row="3" VerticalAlignment="Center"></Label>
-                <TextBox Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,7"></TextBox>
+                <Label FontSize="16" Content="Imię:" VerticalAlignment="Center"></Label>
+                <TextBox Name="Username" Text="{Binding UserName, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" FontSize="16"></TextBox>
+                <Label FontSize="16" Content="Nazwisko:" Grid.Row="1" VerticalAlignment="Center"></Label>
+                <TextBox Name="Surname" Text="{Binding Surname, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="10" FontSize="16"></TextBox>
+                <Label FontSize="16" Content="Email:" Grid.Row="2" VerticalAlignment="Center"></Label>
+                <TextBox Name="Email" Text="{Binding Email, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="10" FontSize="16"></TextBox>
+                <Label FontSize="16" Content="Numer telefonu:" Grid.Row="3" VerticalAlignment="Center"></Label>
+                <TextBox Name="PhoneNumber" Text="{Binding PhoneNumber, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Margin="10" FontSize="16"></TextBox>
+                <Label FontSize="16" Content="Miasto:" Grid.Row="4" VerticalAlignment="Center"></Label>
+                <TextBox Name="City" Text="{Binding City, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Margin="10" FontSize="16"></TextBox>
 
-                <Grid Grid.Row="4" Grid.ColumnSpan="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="Ulica:" VerticalAlignment="Center"></Label>
-                    <TextBox Grid.Column="2" Grid.ColumnSpan="2" Margin="5,7"></TextBox>
 
-                    <Grid Grid.Column="4" Grid.ColumnSpan="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
+                <Label FontSize="16" Grid.Row="5" Content="Ulica:" VerticalAlignment="Center"></Label>
+                <TextBox Grid.Row="5" FontSize="16" Name="StreetName" Text="{Binding StreetName, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.ColumnSpan="2" Margin="10"></TextBox>
 
-                        <Label Grid.ColumnSpan="2" Content="Kod pocztowy:" VerticalAlignment="Center"></Label>
-                        <TextBox Grid.Column="2" Margin="0,7"></TextBox>
-                    </Grid>
-                </Grid>
-                
-                <Label Content="Sposób płatności:" Grid.Row="5" VerticalAlignment="Center"></Label>
-                <ComboBox SelectedIndex="0" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,7">
-                    <ComboBoxItem Content="Gotówką"/>
-                    <ComboBoxItem Content="Przelew bankowy"/>
+                <Label FontSize="16" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" Content="Kod pocztowy:" VerticalAlignment="Center"></Label>
+                <TextBox FontSize="16" Grid.Row="6" Name="PostalCode" Text="{Binding PostalCode, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource errorTemplate}" Grid.Column="1" Grid.ColumnSpan="2" Margin="10"></TextBox>
+
+
+                <Label FontSize="16" Content="Sposób płatności:" Grid.Row="7" VerticalAlignment="Center"></Label>
+                <ComboBox FontSize="16" ItemsSource="{Binding Source={enums:EnumBindingSource {x:Type enums:PaymentMethod}}}" SelectedItem="{Binding PaymentMethod}" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Margin="10">
                 </ComboBox>
+
             </Grid>
         </GroupBox>
-        
-        <GroupBox Header="Wiadomości" Grid.ColumnSpan="3" Grid.Row="3" Grid.RowSpan="2" Margin="10" BorderBrush="Black" BorderThickness="2">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.RowSpan="3" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                    <Button Padding="5" Margin="5" Content="Utwórz"></Button>
-                    <Button Padding="5" Margin="5" Content="Podgląd"></Button>
-                    <Button Padding="5" Margin="5" Content="Usuń wybrane"></Button>
-                    <Button Padding="5" Margin="5" Content="Wyczyść"></Button>
-                </StackPanel>
+        <Grid Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Margin="10 0 10 50">
+            <Border BorderBrush="Black" BorderThickness="2 2 2 2" CornerRadius="0 0 5 5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid Grid.ColumnSpan="2">
+                    <Button Grid.Column="0" Margin="10" Padding="5" FontSize="16" Command="{Binding PreviousPageCommand}">Poprzednia</Button>
+                    <Label HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Center"  FontSize="23" Content="{Binding OrdPrdPage}"></Label>
+                    <Button Grid.Column="2" Margin="10" Padding="5" FontSize="16" Command="{Binding NextPageCommand}">Następna</Button>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="3" Grid.ColumnSpan="3" Margin="10 0 10 50">
+            <Border BorderBrush="Black" BorderThickness="2 2 2 2" CornerRadius="0 0 5 5">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Text="Szukaj" Margin="5"  >
-                        
-                    </TextBox>
-                    <ComboBox SelectedIndex="0" Grid.Column="1" Margin="5">
-                        <ComboBoxItem Content="Odebrane"/>
-                        <ComboBoxItem Content="Wysłane"/>
-                    </ComboBox>
+                    <Button Grid.Column="0" FontSize="16" Margin="10" Padding="5" Content="Zapisz" Command="{Binding SaveUserDataCommand}"></Button>
+                    <Button Grid.Column="1" FontSize="16" Margin="10" Padding="5" Content="Wyczyść" Click="ClearPersonalData_Click"></Button>
                 </Grid>
-                <ListView Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="5" BorderBrush="Black" BorderThickness="1">
-                    <ListViewItem Content="Wiadomość 1"/>
-                    <ListViewItem Content="Wiadomość 2"/>
-                    <ListViewItem Content="Wiadomość 3"/>
-                    <ListViewItem Content="Wiadomość 4"/>
-                    <ListViewItem Content="Wiadomość 5"/>
-                    <ListViewItem Content="Wiadomość 6"/>
-                    <ListViewItem Content="Wiadomość 7"/>
-                    <ListViewItem Content="Wiadomość 8"/>
-                    <ListViewItem Content="Wiadomość 9"/>
-                    <ListViewItem Content="Wiadomość 10"/>
-                </ListView>
-            </Grid>
-        </GroupBox>
+            </Border>
+        </Grid>
+
     </Grid>
 </UserControl>

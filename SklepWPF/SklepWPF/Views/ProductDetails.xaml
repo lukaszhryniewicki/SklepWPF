@@ -4,60 +4,62 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SklepWPF"
-              xmlns:vm="clr-namespace:SklepWPF.ViewModels"
+      xmlns:vm="clr-namespace:SklepWPF.ViewModels"
+      xmlns:all="clr-namespace:SklepWPF"
       mc:Ignorable="d" 
-      d:DesignHeight="700" d:DesignWidth="600">
+      d:DesignHeight="600" d:DesignWidth="800">
+
 
     <Grid>
-        <Grid.Resources>
+     
+        
+        <Grid.Resources >
+           
             <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="100" />
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="223" />
-            <RowDefinition Height="6*" />
+            <RowDefinition Height="62" />
+            <RowDefinition MaxHeight="800" Height="auto" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
+        <Image Width="200" Grid.Column="0" Grid.Row="0" Source="/Images/allebro_logo.png" Margin="10 3 0 5"></Image>
 
-        <!--<Image Grid.Column="0" Grid.Row="1" Source=""></Image>-->
-        <Label Grid.Column="0" Grid.Row="1" >LOGO PLACEHOLDER</Label>
+        <Image HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Source="{Binding ImagePath}" Margin="10,0,1,3" />
 
-        <!--<Image Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
-        </Image>-->
-        <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
-            Obrazek placeholder
-        </Label>
-
-        <DockPanel Height="40" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
+        <DockPanel Height="40" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,1,0,2">
+            <Button DockPanel.Dock="Right" Background="LawnGreen" Padding="10" Margin="0,0,10,0">Wyszukaj</Button>
+            <TextBox VerticalContentAlignment="Center"  Margin="10 0 10 0" DockPanel.Dock="Left" >
+            </TextBox>
+        </DockPanel>
 
 
-        <Label FontSize="30" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Content="{Binding ProductName}"></Label>
-        <StackPanel Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" MaxHeight="230">
 
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Cena"></Label>
+        <StackPanel Grid.Column="2" Grid.Row="1"  HorizontalAlignment="Left"  VerticalAlignment="Top">
+            <Label  FontSize="25" Content="{Binding ProductName}"></Label>
+            <StackPanel   Orientation="Horizontal">
+                <Label  FontWeight="Bold" Content="Cena"></Label>
                 <Label Content="{Binding Price}"></Label>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Firma"></Label>
+            <StackPanel  Orientation="Horizontal">
+                <Label FontWeight="Bold" Content="Firma"></Label>
                 <Label Content="{Binding Brand}"></Label>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Content="Ilość sztuk w magazynie"></Label>
+                <Label FontWeight="Bold" Content="Ilość sztuk w magazynie"></Label>
                 <Label Content="{Binding Quantity}"></Label>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Content="Kategorie"></Label>
+                <Label FontWeight="Bold" Content="Kategorie"></Label>
                 <ListBox ItemsSource="{Binding Categories}">
                     <ListBox.ItemTemplate>
 
@@ -66,13 +68,14 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+                <Button  Command="{Binding ProductsViewModel.AddItemToCartCommand}" CommandParameter="{Binding Id}" Visibility="{Binding ShowButton, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Background="IndianRed" Padding="5" Width="150" HorizontalAlignment="Left" >Dodaj do koszyka</Button>
 
             </StackPanel>
-            <Button Visibility="{Binding ShowCartButton, Converter={StaticResource BoolToVis},FallbackValue=Hidden}" Background="IndianRed" Padding="5" Width="150" HorizontalAlignment="Left" >Dodaj do koszyka</Button>
 
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Margin="30,0,30,0">
-            <TextBlock x:Name="subHeaderText" 
+        
+        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,30,0">
+            <TextBlock 
                    FontSize="20" 
                    TextWrapping="Wrap" 
                    Foreground="Black"
